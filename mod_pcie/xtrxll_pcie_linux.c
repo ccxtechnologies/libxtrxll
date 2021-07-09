@@ -104,11 +104,9 @@ static void internal_xtrxll_reg_out_n(struct xtrxll_pcie_dev* dev,
 	for (i = 0; i < count; i++) {
 		to_write[i] = htobe32(outval[i]);
 	}
-	//if (count == 2) {
-	//	*((uint64_t*)&dev->mmap_xtrxll_regs[streg]) = *((uint64_t*)&to_write[0]);
-	//} else {
-		memcpy((void*)&dev->mmap_xtrxll_regs[streg], to_write, count * 4);
-	//}
+
+	memcpy((void*)&dev->mmap_xtrxll_regs[streg], to_write, count * 4);
+
 	__atomic_thread_fence(__ATOMIC_SEQ_CST);
 
 	XTRXLLS_LOG("PCIE", XTRXLL_DEBUG_REGS, "%s: Write [%04x+%d] = %08x\n",
@@ -123,11 +121,8 @@ static void internal_xtrxll_reg_in_n(struct xtrxll_pcie_dev* dev,
 	uint32_t to_read[count];
 
 	__atomic_thread_fence(__ATOMIC_SEQ_CST);
-	if (count == 2) {
-		*((uint64_t*)&to_read[0]) = *((uint64_t*)&dev->mmap_xtrxll_regs[streg]);
-	} else {
-		memcpy(to_read, (void*)&dev->mmap_xtrxll_regs[streg], count * 4);
-	}
+
+	memcpy(to_read, (void*)&dev->mmap_xtrxll_regs[streg], count * 4);
 
 	for (i = 0; i < count; i++) {
 		inval[i] = be32toh(to_read[i]);
